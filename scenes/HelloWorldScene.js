@@ -1,46 +1,72 @@
-// URL to explain PHASER scene: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/scene/
-
 export default class HelloWorldScene extends Phaser.Scene {
   constructor() {
-    // key of the scene
-    // the key will be used to start the scene by other scenes
-    super("hello-world");
+    super("HelloWorldScene");
   }
 
   init() {
-    // this is called before the scene is created
-    // init variables
-    // take data passed from other scenes
-    // data object param {}
+    
   }
 
   preload() {
-    // load assets
-    this.load.image("sky", "./assets/space3.png");
-    this.load.image("logo", "./assets/phaser3-logo.png");
-    this.load.image("red", "./assets/particles/red.png");
+    // Load assets
+    this.load.image("sky", "./public/assets/cielo.webp");
+    this.load.image("diamond", "./public/assets/diamond.png");
+    this.load.image("square", "./public/assets/square.png");
+    this.load.image("triangle", "./public/assets/triangle.png");
+    this.load.image("platform", "./public/assets/platform.png");
+    this.load.spritesheet("ninja", "./public/assets/ninja.png", {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
   }
 
   create() {
-    // create game objects
-    this.add.image(400, 300, "sky");
+    this.add.image(400, 300, "sky").setScale(2.5);
 
-    const logo = this.physics.add.image(400, 100, "logo");
-    logo.setVelocity(100, 200);
-    logo.setBounce(1, 1);
-    logo.setCollideWorldBounds(true);
+    this.player = this.physics.add.sprite(100, 450, "ninja").setScale(2);
+    this.player.setBounce(0.2);
+    this.player.setCollideWorldBounds(true);
+    
+    this.collider = this.physics.add.collider(this.player, this.platform);
 
-    // emmit particles from logo
-    const emitter = this.add.particles(0, 0, "red", {
-      speed: 100,
-      scale: { start: 1, end: 0 },
-      blendMode: "ADD",
+    
+    const ground = this.physics.add.staticImage(400, 600, "platform").setScale(2).refreshBody();
+
+   
+    this.fallingObjects = this.physics.add.group({
+        allowGravity: true, 
     });
 
-    emitter.startFollow(logo);
+    this.time.addEvent({
+        delay: 1000, 
+        callback: this.spawnFallingObject,
+        callbackScope: this,
+        loop: true,
+    });
+
+    this.physics.add.collider(this.fallingObjects, ground, (object1, object2) => {
+        if (this.fallingObjects.contains(object1)) {
+            object1.destroy(); 
+        } else if (this.fallingObjects.contains(object2)) {
+            object2.destroy(); 
+        }
+    });
+  }
+
+  spawnFallingObject() {
+
+    const objectTypes = ["diamond", "square", "triangle"];
+    const randomType = Phaser.Utils.Array.GetRandom(objectTypes);
+
+   
+    const x = Phaser.Math.Between(50, 750); 
+    const object = this.fallingObjects.create(x, 0, randomType);
+
+  
+    object.setBounce(0.2);
+    object.setCollideWorldBounds(false);
   }
 
   update() {
-    // update game objects
   }
 }
