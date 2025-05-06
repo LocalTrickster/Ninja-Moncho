@@ -28,7 +28,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.platforms.create(800, 300, "platform").setScale(0.5).refreshBody();
     this.platforms.create(500, 250, "platform").setScale(0.5).refreshBody();
 
-    this.player = this.physics.add.sprite(100, 450, "ninja").setScale(2);
+    this.player = this.physics.add.sprite(100, 450, "ninja").setScale(1.5);
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
 
