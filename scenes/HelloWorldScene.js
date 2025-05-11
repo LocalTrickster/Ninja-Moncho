@@ -258,5 +258,9 @@ export default class HelloWorldScene extends Phaser.Scene {
     }
   }
 }
+<<<<<<< HEAD
 // Compare this snippet from scenes/HelloWorldScene.js:
 //helloworld
+=======
+// Compare this snippet from scenes/HelloWorldScene.js:
+>>>>>>> parent of cfe2b2f (Troubleshooting)
