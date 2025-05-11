@@ -1,6 +1,6 @@
 import HelloWorldScene from "./scenes/HelloWorldScene.js";
 import WinCondition from "./scenes/WinCondition.js";
-
+import LosingCondition from "./scenes/LosingCondition.js"; 
 
 const config = {
   type: Phaser.AUTO,
@@ -25,7 +25,7 @@ const config = {
       debug: false,
     },
   },
-  scene: [HelloWorldScene, WinCondition],
+  scene: [HelloWorldScene, WinCondition, LosingCondition], 
 };
 
 const game = new Phaser.Game(config);
