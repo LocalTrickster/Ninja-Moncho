@@ -11,8 +11,6 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.load.image("square", "./public/assets/square.png");
     this.load.image("triangle", "./public/assets/triangle.png");
     this.load.image("platform", "./public/assets/platform.png");
-    this.load.image("bomb", "./public/assets/bomb.png"); 
-    this.load.image("fondomenu", "./public/assets/fondomenu.jpg");
     this.load.spritesheet("ninja", "./public/assets/dude.png", {
       frameWidth: 32,
       frameHeight: 48,
@@ -71,20 +69,26 @@ export default class HelloWorldScene extends Phaser.Scene {
       loop: true,
     });
 
+    
     this.physics.add.collider(
       this.fallingObjects,
       this.platforms,
       (fallingObject, platform) => {
+       
         let score = fallingObject.getData("Puntuación");
 
+     
         score -= 5;
 
+       
         fallingObject.setData("Puntuación", score);
 
+       
         if (score <= 0) {
           fallingObject.disableBody(true, true);
         }
 
+       
         console.log(`Nuevo puntaje del objeto: ${score}`);
       },
       null,
@@ -136,7 +140,6 @@ export default class HelloWorldScene extends Phaser.Scene {
       { type: "diamond", score: 20 },
       { type: "triangle", score: 15 },
       { type: "square", score: 10 },
-      { type: "bomb", score: -10 }, 
     ];
     const randomObject = Phaser.Utils.Array.GetRandom(objectTypes);
 
@@ -198,29 +201,21 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.timerText.setText(`Tiempo: ${this.timeLeft}`);
 
     if (this.timeLeft <= 0) {
-        this.timeLeft = 0;
-
-        this.scene.start("LosingCondition", {
-            score: this.score,
-            collectedShapes: this.collectedShapes,
-        });
+      this.timeLeft = 0;
+      this.endGame("Se acabó el tiempo!");
     }
   }
 
   endGame(message) {
-    this.add
-      .text(400, 300, message, {
-        fontSize: "32px",
-        fill: "#fff",
-      })
-      .setOrigin(0.5);
+    this.add.text(400, 300, message, {
+      fontSize: "32px",
+      fill: "#fff",
+    }).setOrigin(0.5);
 
-    this.add
-      .text(400, 350, "Presiona R para reiniciar", {
-        fontSize: "24px",
-        fill: "#fff",
-      })
-      .setOrigin(0.5);
+    this.add.text(400, 350, "Presiona R para reiniciar", {
+      fontSize: "24px",
+      fill: "#fff",
+    }).setOrigin(0.5);
 
     if (this.spawnEvent) {
       this.spawnEvent.remove();
