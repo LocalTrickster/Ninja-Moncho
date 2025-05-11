@@ -253,3 +253,4 @@ export default class HelloWorldScene extends Phaser.Scene {
     }
   }
 }
+// Compare this snippet from scenes/HelloWorldScene.js:
