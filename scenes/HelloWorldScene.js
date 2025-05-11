@@ -21,9 +21,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.add.image(400, 300, "sky").setScale(2.5);
 
     this.platforms = this.physics.add.staticGroup();
-
     this.platforms.create(400, 600, "platform").setScale(2).refreshBody();
-
     this.platforms.create(200, 400, "platform").setScale(0.5).refreshBody();
     this.platforms.create(800, 300, "platform").setScale(0.5).refreshBody();
     this.platforms.create(500, 250, "platform").setScale(0.5).refreshBody();
@@ -64,32 +62,68 @@ export default class HelloWorldScene extends Phaser.Scene {
       allowGravity: true,
     });
 
-    this.time.addEvent({
+    this.spawnEvent = this.time.addEvent({
       delay: 500,
       callback: this.spawnFallingObject,
       callbackScope: this,
       loop: true,
     });
 
+    
     this.physics.add.collider(
       this.fallingObjects,
       this.platforms,
       (fallingObject, platform) => {
-        let score = fallingObject.getData("score");
-        fallingObject.setData("score", score - 5);
-        if (score <= 5) {
+       
+        let score = fallingObject.getData("Puntuación");
+
+     
+        score -= 5;
+
+       
+        fallingObject.setData("Puntuación", score);
+
+       
+        if (score <= 0) {
           fallingObject.disableBody(true, true);
         }
+
+       
+        console.log(`Nuevo puntaje del objeto: ${score}`);
       },
       null,
       this
     );
 
+    this.collectedShapes = {
+      diamond: 0,
+      triangle: 0,
+      square: 0,
+    };
+
     this.score = 0;
 
-    this.scoreText = this.add.text(16, 16, "Score: 0", {
+    this.scoreText = this.add.text(16, 16, "Puntuación: 0", {
       fontSize: "32px",
       fill: "#fff",
+    });
+
+    this.shapesText = this.add.text(16, 50, "Formas: 0D, 0T, 0C", {
+      fontSize: "24px",
+      fill: "#fff",
+    });
+
+    this.timeLeft = 15;
+    this.timerText = this.add.text(650, 15, `Tiempo: ${this.timeLeft}`, {
+      fontSize: "24px",
+      fill: "#fff",
+    });
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: this.updateTimer,
+      callbackScope: this,
+      loop: true,
     });
 
     this.physics.add.overlap(
@@ -112,19 +146,86 @@ export default class HelloWorldScene extends Phaser.Scene {
     const x = Phaser.Math.Between(50, 750);
     const object = this.fallingObjects.create(x, 0, randomObject.type);
 
-    object.setBounce(1);
+    object.setBounce(0.8);
     object.setCollideWorldBounds(true);
-    object.setData("score", randomObject.score);
+    object.setData("Puntuación", randomObject.score);
     object.setVelocityX(Phaser.Math.Between(-50, 50));
   }
 
   collectObject(player, object) {
     object.disableBody(true, true);
 
-    const objectScore = object.getData("score");
+    const objectScore = object.getData("Puntuación");
     this.score += objectScore;
 
-    this.scoreText.setText(`Score: ${this.score}`);
+    const objectType = object.texture.key;
+    if (this.collectedShapes[objectType] !== undefined) {
+      this.collectedShapes[objectType]++;
+    }
+
+    this.scoreText.setText(`Puntuación: ${this.score}`);
+    this.shapesText.setText(
+      `Formas: ${this.collectedShapes.diamond}D, ${this.collectedShapes.triangle}T, ${this.collectedShapes.square}C`
+    );
+
+    this.checkWinCondition();
+  }
+
+  checkWinCondition() {
+    if (this.score >= 100) {
+      this.winGame("Conseguiste 100 puntos!");
+      return;
+    }
+
+    if (
+      this.collectedShapes.diamond >= 2 &&
+      this.collectedShapes.triangle >= 2 &&
+      this.collectedShapes.square >= 2
+    ) {
+      this.winGame("Conseguiste los 3 pares!");
+      return;
+    }
+  }
+
+  winGame(message) {
+    this.scene.start("WinScene", {
+      message: message,
+      score: this.score,
+      collectedShapes: this.collectedShapes,
+    });
+  }
+
+  updateTimer() {
+    this.timeLeft--;
+
+    this.timerText.setText(`Tiempo: ${this.timeLeft}`);
+
+    if (this.timeLeft <= 0) {
+      this.timeLeft = 0;
+      this.endGame("Se acabó el tiempo!");
+    }
+  }
+
+  endGame(message) {
+    this.add.text(400, 300, message, {
+      fontSize: "32px",
+      fill: "#fff",
+    }).setOrigin(0.5);
+
+    this.add.text(400, 350, "Presiona R para reiniciar", {
+      fontSize: "24px",
+      fill: "#fff",
+    }).setOrigin(0.5);
+
+    if (this.spawnEvent) {
+      this.spawnEvent.remove();
+    }
+
+    this.physics.pause();
+    this.player.setTint(0xff0000);
+    this.player.anims.stop();
+
+    this.gameOver = true;
   }
 
   update() {
