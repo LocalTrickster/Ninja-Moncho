@@ -235,28 +235,35 @@ export default class HelloWorldScene extends Phaser.Scene {
 
   update() {
     if (Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-      this.scene.restart();
+        this.scene.restart();
     }
 
     if (this.gameOver) {
-      return;
+        return;
+    }
+
+   
+    if (this.score < 0) {
+        this.scene.start("NegativeScoreScene", {
+            score: this.score,
+            collectedShapes: this.collectedShapes,
+        });
+        return;
     }
 
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-200);
-      this.player.anims.play("left", true);
+        this.player.setVelocityX(-200);
+        this.player.anims.play("left", true);
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(200);
-      this.player.anims.play("right", true);
+        this.player.setVelocityX(200);
+        this.player.anims.play("right", true);
     } else {
-      this.player.setVelocityX(0);
-      this.player.anims.play("turn");
+        this.player.setVelocityX(0);
+        this.player.anims.play("turn");
     }
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-330);
+        this.player.setVelocityY(-330);
     }
   }
 }
-// Compare this snippet from scenes/HelloWorldScene.js:
-//helloworld
