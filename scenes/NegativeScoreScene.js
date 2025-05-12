@@ -1,20 +1,21 @@
-export default class WinCondition extends Phaser.Scene {
+export default class NegativeScoreScene extends Phaser.Scene {
     constructor() {
-        super("WinScene");
+        super("NegativeScoreScene");
     }
 
     init(data) {
-       
-        this.message = data.message;
         this.score = data.score;
         this.collectedShapes = data.collectedShapes;
     }
-    
-    create() {
 
+    preload() {
+        this.load.image("fondomenu", "./public/assets/fondomenu.jpg");
+    }
+
+    create() {
         this.add.image(400, 300, "fondomenu").setScale(1);
-        
-        this.add.text(400, 200, this.message, {
+
+        this.add.text(400, 200, "¡Perdiste! Puntaje negativo", {
             fontSize: "32px",
             fill: "#fff",
         }).setOrigin(0.5);
@@ -27,22 +28,21 @@ export default class WinCondition extends Phaser.Scene {
         this.add.text(
             400,
             350,
-            `Shapes: ${this.collectedShapes.diamond}D, ${this.collectedShapes.triangle}T, ${this.collectedShapes.square}S`,
+            `Formas recolectadas: ${this.collectedShapes.diamond}D, ${this.collectedShapes.triangle}T, ${this.collectedShapes.square}C`,
             {
                 fontSize: "24px",
                 fill: "#fff",
             }
         ).setOrigin(0.5);
 
-        
         this.add.text(400, 450, "Presiona R para reintentar", {
             fontSize: "24px",
             fill: "#fff",
         }).setOrigin(0.5);
 
-        
+      
         this.input.keyboard.on("keydown-R", () => {
-            this.scene.start("HelloWorldScene"); 
+            this.scene.start("HelloWorldScene");
         });
     }
 }
